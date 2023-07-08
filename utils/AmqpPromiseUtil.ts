@@ -32,5 +32,16 @@ export default class AmqpPromiseUtil {
             }
         })
     }
-    
+
+    static async createTemporaryQueue(channel : amqp.Channel) : Promise<amqp.Replies.AssertQueue> {
+        return new Promise((resolve, reject) => {
+            channel.assertQueue('', {exclusive : true},(err : any, queue : amqp.Replies.AssertQueue) => {
+                if (err == null) {
+                    resolve(queue)
+                } else {
+                    reject(err)
+                }
+            })
+        })
+    }
 }

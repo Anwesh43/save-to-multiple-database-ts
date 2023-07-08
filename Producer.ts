@@ -5,20 +5,20 @@ process.stdin.resume()
 
 export default class Producer {
     channel : amqp.Channel | null = null 
-    constructor(private queue : string) {
+    constructor(private exchange : string) {
 
     }
 
     async connect()  {
         const connection = await AmqpPromiseUtil.connectPromise()
         this.channel = await AmqpPromiseUtil.createChannelPromise(connection)
-        this.channel?.assertQueue(this.queue, {
-            durable: true 
+        this.channel?.assertExchange(this.exchange, 'fanout', {
+            durable: false 
         })
     }
 
     async publish(msg : string) {
-        this.channel?.sendToQueue(this.queue, Buffer.from(msg), {
+        this.channel?.publish(this.exchange,'', Buffer.from(msg), {
             persistent: true 
         })
     }
